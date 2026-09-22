@@ -71,7 +71,7 @@
     .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e1efe6; }
     .section-title { font-size: 1.25rem; font-weight: 700; color: var(--accent-color); display: flex; align-items: center; gap: 10px; }
 
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-group label { font-size: 0.85rem; font-weight: 700; color: var(--text-dark); text-transform: uppercase; }
     input[type="text"], select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #b8d5c3; border-radius: 6px; font-size: 0.95rem; outline: none; background-color: #f8faf9; }
@@ -180,6 +180,14 @@
             </select>
           </div>
           <div class="form-group" style="margin-bottom: 12px;">
+            <label>Categoria / Gênero:</label>
+            <select id="ind-genero" required>
+              <option value="Masculino">Masculino</option>
+              <option value="Feminino">Feminino</option>
+              <option value="Misto">Misto</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
             <label>Segmento:</label>
             <select id="ind-segmento" required>
               <option value="Fundamental 01">Fundamental 01</option>
@@ -204,12 +212,20 @@
             <label>Nomes dos Alunos (um por linha):</label>
             <textarea id="lote-nomes" placeholder="João Pedro&#10;Maria Eduarda&#10;Gabriel Costa" required></textarea>
           </div>
-          <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px;">
+          <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px;">
             <div class="form-group">
               <label>Modalidade:</label>
               <select id="lote-modalidade">
                 <option value="Tênis de Mesa">Tênis de Mesa</option>
                 <option value="Xadrez">Xadrez</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Gênero:</label>
+              <select id="lote-genero">
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Misto">Misto</option>
               </select>
             </div>
             <div class="form-group">
@@ -238,7 +254,7 @@
       <div class="section-title"><span>🏫</span> Consulta de Atletas Inscritos por Turma</div>
       <button class="btn-3d btn-print no-print" onclick="window.print()">🖨️ Imprimir Lista</button>
     </div>
-    <div class="form-grid no-print" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 15px;">
+    <div class="form-grid no-print" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 15px;">
       <div class="form-group">
         <label>Filtrar Segmento:</label>
         <select id="filtro-segmento" onchange="renderizarTabelaAtletas()">
@@ -257,6 +273,15 @@
           <option value="Xadrez">Xadrez</option>
         </select>
       </div>
+      <div class="form-group">
+        <label>Filtrar Gênero:</label>
+        <select id="filtro-genero" onchange="renderizarTabelaAtletas()">
+          <option value="TODOS">Todos os Gêneros</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Feminino">Feminino</option>
+          <option value="Misto">Misto</option>
+        </select>
+      </div>
       <div class="form-group" style="display:flex; align-items:flex-end;">
         <span id="total-atletas-count" style="font-size:0.9rem; font-weight:bold; color:var(--text-muted); margin-bottom:10px;">Total Cadastrados: 0</span>
       </div>
@@ -268,6 +293,7 @@
             <th>#</th>
             <th>Nome do Atleta</th>
             <th>Modalidade</th>
+            <th>Gênero</th>
             <th>Segmento</th>
             <th>Turma</th>
             <th class="no-print">Ações</th>
@@ -285,12 +311,20 @@
       <button class="btn-3d btn-print no-print" onclick="window.print()">🖨️ Imprimir Chaves</button>
     </div>
 
-    <div class="form-grid no-print" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 20px;">
+    <div class="form-grid no-print" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
       <div class="form-group">
         <label>Modalidade:</label>
         <select id="chave-modalidade">
           <option value="Tênis de Mesa">Tênis de Mesa</option>
           <option value="Xadrez">Xadrez</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Gênero:</label>
+        <select id="chave-genero">
+          <option value="Masculino">Masculino</option>
+          <option value="Feminino">Feminino</option>
+          <option value="Misto">Misto</option>
         </select>
       </div>
       <div class="form-group">
@@ -346,6 +380,7 @@
             <th>Posição</th>
             <th>Atleta</th>
             <th>Modalidade</th>
+            <th>Gênero</th>
             <th>Segmento</th>
             <th>Turma</th>
             <th>Pontuação</th>
@@ -353,7 +388,7 @@
         </thead>
         <tbody id="tabela-classificacao-body">
           <tr>
-            <td colspan="6" style="text-align: center; color: var(--text-muted);">Defina os vencedores nas chaves para calcular a pontuação.</td>
+            <td colspan="7" style="text-align: center; color: var(--text-muted);">Defina os vencedores nas chaves para calcular a pontuação.</td>
           </tr>
         </tbody>
       </table>
@@ -383,10 +418,14 @@
       vencedores: [],
       perdedores: [],
       grandFinal: null,
+      disputaTerceiro: null,
       classificacao: { campeao: null, vice: null, terceiro: null }
     };
 
-    // --- SISTEMA DE ARMAZENAMENTO LOCAL (LOCALSTORAGE) ---
+    window.onload = function() {
+      carregarDadosLocais();
+    };
+
     function salvarDadosLocais() {
       localStorage.setItem('bj_atletas', JSON.stringify(bancoAtletas));
       localStorage.setItem('bj_torneio', JSON.stringify(torneioAtual));
@@ -412,14 +451,13 @@
       if (confirm("Tem certeza que deseja apagar TODOS os alunos e chaves cadastradas?")) {
         localStorage.clear();
         bancoAtletas = [];
-        torneioAtual = { tipo: 'dupla', vencedores: [], perdedores: [], grandFinal: null, classificacao: { campeao: null, vice: null, terceiro: null } };
+        torneioAtual = { tipo: 'dupla', vencedores: [], perdedores: [], grandFinal: null, disputaTerceiro: null, classificacao: { campeao: null, vice: null, terceiro: null } };
         renderizarTabelaAtletas();
         document.getElementById('area-chaves-desenho').innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 40px; background: #f4f8f5; border-radius: 8px; border: 1px dashed #a3c9b1;">Selecione os parâmetros acima e clique em <strong>"Gerar / Resetar Chave Interativa"</strong>.</div>`;
         atualizarTabelaClassificacao();
       }
     }
 
-    // --- CARREGAR E EXIBIR LOGO ---
     function carregarLogo(event) {
       const file = event.target.files[0];
       if (file) {
@@ -451,11 +489,12 @@
         id: Date.now() + Math.random(),
         nome: document.getElementById('ind-nome').value.trim(),
         modalidade: document.getElementById('ind-modalidade').value,
+        genero: document.getElementById('ind-genero').value,
         segmento: document.getElementById('ind-segmento').value,
         turma: document.getElementById('ind-turma').value.trim()
       });
       salvarDadosLocais();
-      alert('Atleta cadastrado!');
+      alert('Atleta cadastrado com sucesso!');
       document.getElementById('form-individual').reset();
       renderizarTabelaAtletas();
     }
@@ -464,15 +503,16 @@
       e.preventDefault();
       const nomes = document.getElementById('lote-nomes').value.split('\n').map(n => n.trim()).filter(n => n);
       const mod = document.getElementById('lote-modalidade').value;
+      const gen = document.getElementById('lote-genero').value;
       const seg = document.getElementById('lote-segmento').value;
       const turma = document.getElementById('lote-turma').value.trim();
 
       nomes.forEach(nome => {
-        bancoAtletas.push({ id: Date.now() + Math.random(), nome, modalidade: mod, segmento: seg, turma });
+        bancoAtletas.push({ id: Date.now() + Math.random(), nome, modalidade: mod, genero: gen, segmento: seg, turma });
       });
 
       salvarDadosLocais();
-      alert(`${nomes.length} atletas adicionados!`);
+      alert(`${nomes.length} atletas adicionados com sucesso!`);
       document.getElementById('form-lote').reset();
       renderizarTabelaAtletas();
     }
@@ -481,11 +521,13 @@
       const tbody = document.querySelector('#tabela-lista-atletas tbody');
       const filtroSeg = document.getElementById('filtro-segmento').value;
       const filtroMod = document.getElementById('filtro-modalidade').value;
+      const filtroGen = document.getElementById('filtro-genero').value;
       
       tbody.innerHTML = '';
       const filtrados = bancoAtletas.filter(a => 
         (filtroSeg === 'TODOS' || a.segmento === filtroSeg) &&
-        (filtroMod === 'TODOS' || a.modalidade === filtroMod)
+        (filtroMod === 'TODOS' || a.modalidade === filtroMod) &&
+        (filtroGen === 'TODOS' || a.genero === filtroGen)
       );
 
       document.getElementById('total-atletas-count').innerText = `Total Cadastrados: ${filtrados.length}`;
@@ -496,6 +538,7 @@
           <td>${i + 1}</td>
           <td><strong>${a.nome}</strong></td>
           <td>${a.modalidade}</td>
+          <td>${a.genero || 'Masculino'}</td>
           <td>${a.segmento}</td>
           <td>${a.turma}</td>
           <td class="no-print">
@@ -514,15 +557,20 @@
 
     function gerarChavesDisputa() {
       const mod = document.getElementById('chave-modalidade').value;
+      const gen = document.getElementById('chave-genero').value;
       const seg = document.getElementById('chave-segmento').value;
       torneioAtual.tipo = document.getElementById('chave-sistema').value;
 
-      const participantes = bancoAtletas.filter(a => a.modalidade === mod && a.segmento === seg);
+      const participantes = bancoAtletas.filter(a => 
+        a.modalidade === mod && 
+        (a.genero === gen || (!a.genero && gen === 'Masculino')) && 
+        a.segmento === seg
+      );
 
       if (participantes.length < 2) {
         document.getElementById('area-chaves-desenho').innerHTML = `
           <div style="padding: 15px; background: #fff5f5; color: #c53030; border: 1px solid #feb2b2; border-radius: 8px;">
-            ⚠️ É necessário cadastrar pelo menos 2 atletas em ${mod} (${seg}) para montar as chaves.
+            ⚠️ É necessário cadastrar pelo menos 2 atletas na modalidade ${mod} - ${gen} (${seg}) para montar as chaves.
           </div>`;
         return;
       }
@@ -538,6 +586,7 @@
       torneioAtual.vencedores = [];
       torneioAtual.perdedores = [];
       torneioAtual.grandFinal = { p1: null, p2: null, vencedor: null, perdedor: null, jogoExtra: false, vencedorExtra: null };
+      torneioAtual.disputaTerceiro = { p1: null, p2: null, vencedor: null, perdedor: null };
       torneioAtual.classificacao = { campeao: null, vice: null, terceiro: null };
 
       let totalRodadasW = Math.log2(numSlots);
@@ -583,6 +632,7 @@
       if (chave === 'W') partida = torneioAtual.vencedores[rIndex][mIndex];
       else if (chave === 'L') partida = torneioAtual.perdedores[rIndex][mIndex];
       else if (chave === 'GF') partida = torneioAtual.grandFinal;
+      else if (chave === '3RD') partida = torneioAtual.disputaTerceiro;
 
       if (!partida || (!partida.p1 && !partida.p2)) return;
 
@@ -686,169 +736,192 @@
         }
 
       } else {
-        let finalMatch = torneioAtual.vencedores[torneioAtual.vencedores.length - 1][0];
-        if (finalMatch && finalMatch.vencedor) {
-          torneioAtual.classificacao.campeao = finalMatch.vencedor;
-          torneioAtual.classificacao.vice = finalMatch.perdedor;
+        let totalR = torneioAtual.vencedores.length;
+        let finalMatch = torneioAtual.vencedores[totalR - 1][0];
+
+        if (finalMatch) {
+          if (finalMatch.vencedor) torneioAtual.classificacao.campeao = finalMatch.vencedor;
+          if (finalMatch.perdedor) torneioAtual.classificacao.vice = finalMatch.perdedor;
         }
-        if (torneioAtual.vencedores.length >= 2) {
-          let semi = torneioAtual.vencedores[torneioAtual.vencedores.length - 2];
-          let perdedoresSemi = semi.map(m => m.perdedor).filter(p => p !== null);
-          if (perdedoresSemi.length > 0) torneioAtual.classificacao.terceiro = perdedoresSemi[0];
+
+        if (totalR >= 2) {
+          let semiFinals = torneioAtual.vencedores[totalR - 2];
+          if (semiFinals.length === 2) {
+            torneioAtual.disputaTerceiro.p1 = semiFinals[0].perdedor;
+            torneioAtual.disputaTerceiro.p2 = semiFinals[1].perdedor;
+            if (torneioAtual.disputaTerceiro.vencedor) {
+              torneioAtual.classificacao.terceiro = torneioAtual.disputaTerceiro.vencedor;
+            }
+          }
         }
       }
     }
 
     function renderizarTodasChaves() {
-      const container = document.getElementById('area-chaves-desenho');
-      let html = "";
+      let area = document.getElementById('area-chaves-desenho');
+      area.innerHTML = '';
 
-      html += `<div class="bracket-section-title">👑 Chave Principal (Vencedores)</div>`;
-      html += `<div class="rounds-wrapper">`;
-      torneioAtual.vencedores.forEach((rodada, r) => {
-        let t = `Rodada ${r + 1}`;
-        if (r === torneioAtual.vencedores.length - 1) t = "Final dos Vencedores";
-        html += renderColunaRodada(rodada, t, 'W', r, false);
-      });
-      html += `</div>`;
+      let titleW = document.createElement('div');
+      titleW.className = 'bracket-section-title';
+      titleW.innerText = torneioAtual.tipo === 'dupla' ? 'Chave Principal (Upper Bracket)' : 'Chave de Eliminatória Simples';
+      area.appendChild(titleW);
 
-      if (torneioAtual.tipo === 'dupla') {
-        html += `<div class="bracket-section-title losers">🔄 Chave dos Perdedores (Repescagem)</div>`;
-        html += `<div class="rounds-wrapper">`;
-        torneioAtual.perdedores.forEach((rodada, r) => {
-          let t = `Repescagem R${r + 1}`;
-          if (r === torneioAtual.perdedores.length - 1) t = "Final da Repescagem";
-          html += renderColunaRodada(rodada, t, 'L', r, true);
+      let wrapperW = document.createElement('div');
+      wrapperW.className = 'rounds-wrapper';
+
+      torneioAtual.vencedores.forEach((rodada, rIdx) => {
+        let col = document.createElement('div');
+        col.className = 'round-column';
+        col.innerHTML = `<div class="round-header">Rodada ${rIdx + 1}</div>`;
+
+        rodada.forEach((m, mIdx) => {
+          col.appendChild(criarBoxMatch('W', rIdx, mIdx, m));
         });
-        html += `</div>`;
-
-        if (torneioAtual.grandFinal && (torneioAtual.grandFinal.p1 || torneioAtual.grandFinal.p2)) {
-          html += `<div class="bracket-section-title" style="color:#d69e2e; border-left-color:#d69e2e;">🏆 Grande Final</div>`;
-          html += `<div class="rounds-wrapper">`;
-          
-          html += `<div class="round-column"><div class="round-header grand-final">Jogo 1 (Decisivo)</div>`;
-          html += `<div class="match-box">`;
-          html += renderBotaoJogador(torneioAtual.grandFinal.p1, torneioAtual.grandFinal.vencedor, torneioAtual.grandFinal.perdedor, 'GF', 0, 0);
-          html += `<div class="match-divider"></div>`;
-          html += renderBotaoJogador(torneioAtual.grandFinal.p2, torneioAtual.grandFinal.vencedor, torneioAtual.grandFinal.perdedor, 'GF', 0, 0);
-          html += `</div></div>`;
-
-          if (torneioAtual.grandFinal.jogoExtra) {
-            html += `<div class="round-column"><div class="round-header grand-final" style="background:#c53030;">Jogo 2 (Tira-Teima Extra)</div>`;
-            html += `<div class="match-box">`;
-            html += renderBotaoJogadorExtra(torneioAtual.grandFinal.p1, torneioAtual.grandFinal.vencedorExtra);
-            html += `<div class="match-divider"></div>`;
-            html += renderBotaoJogadorExtra(torneioAtual.grandFinal.p2, torneioAtual.grandFinal.vencedorExtra);
-            html += `</div></div>`;
-          }
-
-          html += `</div>`;
-        }
-      }
-
-      container.innerHTML = html;
-    }
-
-    function renderColunaRodada(rodada, titulo, chaveCode, rIndex, isLoser) {
-      let html = `<div class="round-column"><div class="round-header ${isLoser ? 'losers' : ''}">${titulo}</div>`;
-      rodada.forEach((match, mIndex) => {
-        html += `<div class="match-box">`;
-        html += renderBotaoJogador(match.p1, match.vencedor, match.perdedor, chaveCode, rIndex, mIndex);
-        html += `<div class="match-divider"></div>`;
-        html += renderBotaoJogador(match.p2, match.vencedor, match.perdedor, chaveCode, rIndex, mIndex);
-        html += `</div>`;
+        wrapperW.appendChild(col);
       });
-      html += `</div>`;
-      return html;
+      area.appendChild(wrapperW);
+
+      if (torneioAtual.tipo === 'dupla' && torneioAtual.perdedores.length > 0) {
+        let titleL = document.createElement('div');
+        titleL.className = 'bracket-section-title losers';
+        titleL.innerText = 'Chave de Repescagem (Lower Bracket)';
+        area.appendChild(titleL);
+
+        let wrapperL = document.createElement('div');
+        wrapperL.className = 'rounds-wrapper';
+
+        torneioAtual.perdedores.forEach((rodada, rIdx) => {
+          let col = document.createElement('div');
+          col.className = 'round-column';
+          col.innerHTML = `<div class="round-header losers">Repescagem R${rIdx + 1}</div>`;
+
+          rodada.forEach((m, mIdx) => {
+            col.appendChild(criarBoxMatch('L', rIdx, mIdx, m));
+          });
+          wrapperL.appendChild(col);
+        });
+        area.appendChild(wrapperL);
+
+        let titleGF = document.createElement('div');
+        titleGF.className = 'bracket-section-title';
+        titleGF.innerText = 'Grande Final (Winner Bracket vs Repescagem)';
+        area.appendChild(titleGF);
+
+        let wrapperGF = document.createElement('div');
+        wrapperGF.className = 'rounds-wrapper';
+        let colGF = document.createElement('div');
+        colGF.className = 'round-column';
+        colGF.innerHTML = `<div class="round-header grand-final">Decisão do Título</div>`;
+        colGF.appendChild(criarBoxMatch('GF', 0, 0, torneioAtual.grandFinal));
+
+        if (torneioAtual.grandFinal.jogoExtra) {
+          let boxExtra = document.createElement('div');
+          boxExtra.className = 'match-box';
+          boxExtra.style.border = '2px solid #d69e2e';
+          boxExtra.innerHTML = `<div style="background:#fefcbf; color:#744210; padding:4px 8px; font-size:0.75rem; font-weight:bold; text-align:center;">Jogo Extra (Reset de Chave)</div>`;
+
+          let gf = torneioAtual.grandFinal;
+          let p1Class = gf.vencedorExtra ? (gf.vencedorExtra.id === gf.p1.id ? 'winner' : 'loser') : '';
+          let p2Class = gf.vencedorExtra ? (gf.vencedorExtra.id === gf.p2.id ? 'winner' : 'loser') : '';
+
+          boxExtra.innerHTML += `
+            <button class="player-btn ${p1Class}" onclick="selecionarVencedorExtra(${gf.p1 ? gf.p1.id : null})">
+              <span>${gf.p1 ? gf.p1.nome : 'Aguardando'}</span>
+            </button>
+            <div class="match-divider"></div>
+            <button class="player-btn ${p2Class}" onclick="selecionarVencedorExtra(${gf.p2 ? gf.p2.id : null})">
+              <span>${gf.p2 ? gf.p2.nome : 'Aguardando'}</span>
+            </button>
+          `;
+          colGF.appendChild(boxExtra);
+        }
+
+        wrapperGF.appendChild(colGF);
+        area.appendChild(wrapperGF);
+
+      } else if (torneioAtual.tipo === 'simples' && torneioAtual.vencedores.length >= 2) {
+        let title3rd = document.createElement('div');
+        title3rd.className = 'bracket-section-title';
+        title3rd.innerText = 'Disputa de 3º Lugar';
+        area.appendChild(title3rd);
+
+        let wrapper3rd = document.createElement('div');
+        wrapper3rd.className = 'rounds-wrapper';
+        let col3rd = document.createElement('div');
+        col3rd.className = 'round-column';
+        col3rd.innerHTML = `<div class="round-header">Medalha de Bronze</div>`;
+        col3rd.appendChild(criarBoxMatch('3RD', 0, 0, torneioAtual.disputaTerceiro));
+        wrapper3rd.appendChild(col3rd);
+        area.appendChild(wrapper3rd);
+      }
     }
 
-    function renderBotaoJogador(jogador, vencedor, perdedor, chaveCode, rIndex, mIndex) {
-      if (!jogador) {
-        return `<button class="player-btn" disabled><span style="color:#a0aec0; font-style:italic;">Aguardando...</span></button>`;
+    function criarBoxMatch(chave, rIndex, mIndex, match) {
+      let box = document.createElement('div');
+      box.className = 'match-box';
+
+      if (!match) {
+        box.innerHTML = `<div style="padding:10px; font-size:0.8rem; color:#a0aec0;">Partida Indefinida</div>`;
+        return box;
       }
 
-      let statusClass = "";
-      if (vencedor && vencedor.id === jogador.id) statusClass = "winner";
-      if (perdedor && perdedor.id === jogador.id) statusClass = "loser";
+      let p1 = match.p1;
+      let p2 = match.p2;
 
-      return `
-        <button class="player-btn ${statusClass}" onclick="selecionarVencedor('${chaveCode}', ${rIndex}, ${mIndex}, ${jogador.id})">
-          <span>${jogador.nome} <small style="font-weight:normal; color:#555;">(${jogador.turma})</small></span>
-          ${statusClass === 'winner' ? '<span>✓</span>' : ''}
+      let p1Class = match.vencedor ? (match.vencedor.id === (p1 ? p1.id : null) ? 'winner' : 'loser') : '';
+      let p2Class = match.vencedor ? (match.vencedor.id === (p2 ? p2.id : null) ? 'winner' : 'loser') : '';
+
+      box.innerHTML = `
+        <button class="player-btn ${p1Class}" ${!p1 ? 'disabled' : ''} onclick="selecionarVencedor('${chave}', ${rIndex}, ${mIndex}, ${p1 ? p1.id : null})">
+          <span>${p1 ? p1.nome : 'BYE / Vago'}</span>
+        </button>
+        <div class="match-divider"></div>
+        <button class="player-btn ${p2Class}" ${!p2 ? 'disabled' : ''} onclick="selecionarVencedor('${chave}', ${rIndex}, ${mIndex}, ${p2 ? p2.id : null})">
+          <span>${p2 ? p2.nome : 'BYE / Vago'}</span>
         </button>
       `;
-    }
 
-    function renderBotaoJogadorExtra(jogador, vencedorExtra) {
-      if (!jogador) return '';
-      let statusClass = (vencedorExtra && vencedorExtra.id === jogador.id) ? "winner" : "";
-      return `
-        <button class="player-btn ${statusClass}" onclick="selecionarVencedorExtra(${jogador.id})">
-          <span>${jogador.nome} <small style="font-weight:normal; color:#555;">(${jogador.turma})</small></span>
-          ${statusClass === 'winner' ? '<span>✓</span>' : ''}
-        </button>
-      `;
+      return box;
     }
 
     function atualizarTabelaClassificacao() {
-      const tbody = document.getElementById('tabela-classificacao-body');
+      let tbody = document.getElementById('tabela-classificacao-body');
       tbody.innerHTML = '';
 
       let c = torneioAtual.classificacao;
-      let temDados = false;
 
-      if (c.campeao) {
-        temDados = true;
-        tbody.innerHTML += `
-          <tr>
-            <td class="pos-1">🥇 1º Lugar (Campeão)</td>
-            <td><strong>${c.campeao.nome}</strong></td>
-            <td>${c.campeao.modalidade}</td>
-            <td>${c.campeao.segmento}</td>
-            <td>${c.campeao.turma}</td>
-            <td><strong>50 pts</strong></td>
-          </tr>
-        `;
+      if (!c.campeao && !c.vice && !c.terceiro) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Defina os vencedores nas chaves para calcular a pontuação.</td></tr>`;
+        return;
       }
 
-      if (c.vice) {
-        temDados = true;
-        tbody.innerHTML += `
-          <tr>
-            <td class="pos-2">🥈 2º Lugar (Vice-Campeão)</td>
-            <td><strong>${c.vice.nome}</strong></td>
-            <td>${c.vice.modalidade}</td>
-            <td>${c.vice.segmento}</td>
-            <td>${c.vice.turma}</td>
-            <td><strong>40 pts</strong></td>
-          </tr>
-        `;
-      }
+      let pódio = [
+        { pos: '🥇 1º Lugar', atleta: c.campeao, pts: 50, classe: 'pos-1' },
+        { pos: '🥈 2º Lugar', atleta: c.vice, pts: 40, classe: 'pos-2' },
+        { pos: '🥉 3º Lugar', atleta: c.terceiro, pts: 30, classe: 'pos-3' }
+      ];
 
-      if (c.terceiro) {
-        temDados = true;
-        let terceiros = Array.isArray(c.terceiro) ? c.terceiro : [c.terceiro];
-        terceiros.forEach(t => {
-          tbody.innerHTML += `
-            <tr>
-              <td class="pos-3">🥉 3º Lugar</td>
-              <td><strong>${t.nome}</strong></td>
-              <td>${t.modalidade}</td>
-              <td>${t.segmento}</td>
-              <td>${t.turma}</td>
-              <td><strong>30 pts</strong></td>
-            </tr>
+      pódio.forEach(item => {
+        let tr = document.createElement('tr');
+        if (item.atleta) {
+          tr.innerHTML = `
+            <td class="${item.classe}">${item.pos}</td>
+            <td><strong>${item.atleta.nome}</strong></td>
+            <td>${item.atleta.modalidade}</td>
+            <td>${item.atleta.genero || 'Masculino'}</td>
+            <td>${item.atleta.segmento}</td>
+            <td>${item.atleta.turma}</td>
+            <td><strong>${item.pts} pts</strong></td>
           `;
-        });
-      }
-
-      if (!temDados) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Avance as partidas clicando nos atletas para atualizar a pontuação final.</td></tr>`;
-      }
+        } else {
+          tr.innerHTML = `
+            <td class="${item.classe}">${item.pos}</td>
+            <td colspan="6" style="color: var(--text-muted); font-style: italic;">A definir...</td>
+          `;
+        }
+        tbody.appendChild(tr);
+      });
     }
-
-    // Carrega tudo salvo ao abrir o aplicativo
-    window.onload = carregarDadosLocais;
   </script>
 </body>
 </html>
