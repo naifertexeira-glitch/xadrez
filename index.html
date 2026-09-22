@@ -74,8 +74,8 @@
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-group label { font-size: 0.85rem; font-weight: 700; color: var(--text-dark); text-transform: uppercase; }
-    input[type="text"], select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #b8d5c3; border-radius: 6px; font-size: 0.95rem; outline: none; background-color: #f8faf9; }
-    input[type="text"]:focus, select:focus, textarea:focus { border-color: var(--accent-color); background-color: #ffffff; box-shadow: 0 0 0 3px rgba(0, 104, 55, 0.15); }
+    input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #b8d5c3; border-radius: 6px; font-size: 0.95rem; outline: none; background-color: #f8faf9; }
+    input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus { border-color: var(--accent-color); background-color: #ffffff; box-shadow: 0 0 0 3px rgba(0, 104, 55, 0.15); }
     textarea { resize: vertical; min-height: 120px; }
 
     .import-options { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px; }
@@ -110,9 +110,14 @@
     .pos-2 { font-weight: bold; color: #64748b; }
     .pos-3 { font-weight: bold; color: #b45309; }
 
+    .season-selector-bar {
+      background: #eaf3ed; border: 1px solid var(--border-color); padding: 10px 15px;
+      border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;
+    }
+
     @media print {
       body { background: #ffffff; padding: 0; }
-      .main-header, .nav-tabs-container, .btn-3d, .no-print, .import-options, form { display: none !important; }
+      .main-header, .nav-tabs-container, .btn-3d, .no-print, .import-options, form, .season-selector-bar { display: none !important; }
       .tab-content { display: block !important; box-shadow: none !important; border: none !important; padding: 0 !important; }
       .print-only-header { display: flex !important; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; }
       .print-only-header img { max-height: 50px; }
@@ -126,8 +131,8 @@
   <div class="print-only-header">
     <div id="print-logo-container"></div>
     <div>
-      <h2 style="color: #006837;">COLÉGIO BOM JESUS MARINGÁ - CAMPEONATO ESPORTIVO</h2>
-      <p>Relatório e Documentação Oficial do Torneio Interno</p>
+      <h2 id="print-header-titulo" style="color: #006837;">COLÉGIO BOM JESUS MARINGÁ</h2>
+      <p id="print-header-subtitulo">Torneio Interno - Tênis de Mesa & Xadrez</p>
     </div>
   </div>
 
@@ -140,29 +145,39 @@
         <input type="file" id="input-logo-file" accept="image/*" style="display:none;" onchange="carregarLogo(event)">
       </div>
       <div class="header-text">
-        <h1>Colégio Bom Jesus Maringá</h1>
-        <p>Torneio Interno - Tênis de Mesa & Xadrez</p>
+        <h1 id="header-display-titulo">Colégio Bom Jesus Maringá</h1>
+        <p id="header-display-subtitulo">Torneio Interno - Tênis de Mesa & Xadrez</p>
       </div>
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
-      <button class="btn-3d no-print" onclick="document.getElementById('input-logo-file').click()" style="padding: 5px 10px; font-size:0.75rem;">📷 Alterar Logo</button>
-      <div class="header-badge">Unidade Maringá</div>
+      <div class="header-badge" id="header-display-badge">Unidade Maringá</div>
     </div>
   </header>
+
+  <!-- BARRA DE SELEÇÃO DE ANO/TEMPORADA -->
+  <div class="season-selector-bar no-print">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <label style="font-weight: bold; font-size: 0.9rem; color: var(--accent-color);">📅 Edição / Ano do Campeonato:</label>
+      <select id="select-ano-ativo" onchange="trocarAnoAtivo(this.value)" style="width: auto; font-weight: bold; padding: 6px 12px;">
+      </select>
+    </div>
+    <button class="btn-3d btn-success" onclick="abrirModalNovoAno()" style="padding: 6px 12px; font-size: 0.82rem;">➕ Iniciar Novo Ano / Edição</button>
+  </div>
 
   <div class="nav-tabs-container">
     <button class="btn-3d active" onclick="openTab('tab-cadastro', this)">👤 Cadastro de Atletas</button>
     <button class="btn-3d" onclick="openTab('tab-turmas', this)">🏫 Atletas por Turma</button>
     <button class="btn-3d" onclick="openTab('tab-chaves', this)">⚔️ Chaves de Disputa</button>
     <button class="btn-3d" onclick="openTab('tab-classificacao', this)">🏆 Classificação Geral</button>
+    <button class="btn-3d" onclick="openTab('tab-config', this)">⚙️ Configurar Cabeçalho</button>
     <button class="btn-3d btn-print" onclick="openTab('tab-impressao', this)">🖨️ Opções de Impressão</button>
   </div>
 
   <!-- ABA 1: CADASTRO DE ATLETAS -->
   <div id="tab-cadastro" class="tab-content active">
     <div class="section-header">
-      <div class="section-title"><span>📝</span> Gerenciamento e Cadastro de Atletas</div>
-      <button class="btn-3d btn-danger no-print" onclick="limparTudo()">🗑️ Limpar Todos os Dados</button>
+      <div class="section-title"><span>📝</span> Gerenciamento e Cadastro de Atletas (<span class="lbl-ano-atual">2026</span>)</div>
+      <button class="btn-3d btn-danger no-print" onclick="limparTudoAnoAtual()">🗑️ Apagar Dados do Ano Atual</button>
     </div>
     <div class="import-options">
       <div class="import-box">
@@ -251,7 +266,7 @@
   <!-- ABA 2: ATLETAS POR TURMA -->
   <div id="tab-turmas" class="tab-content">
     <div class="section-header">
-      <div class="section-title"><span>🏫</span> Consulta de Atletas Inscritos por Turma</div>
+      <div class="section-title"><span>🏫</span> Consulta de Atletas Inscritos por Turma (<span class="lbl-ano-atual">2026</span>)</div>
       <button class="btn-3d btn-print no-print" onclick="window.print()">🖨️ Imprimir Lista</button>
     </div>
     <div class="form-grid no-print" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 15px;">
@@ -307,7 +322,7 @@
   <!-- ABA 3: CHAVES DE DISPUTA DINÂMICAS -->
   <div id="tab-chaves" class="tab-content">
     <div class="section-header">
-      <div class="section-title"><span>⚔️</span> Chaves Interativas de Disputa</div>
+      <div class="section-title"><span>⚔️</span> Chaves Interativas de Disputa (<span class="lbl-ano-atual">2026</span>)</div>
       <button class="btn-3d btn-print no-print" onclick="window.print()">🖨️ Imprimir Chaves</button>
     </div>
 
@@ -360,7 +375,7 @@
   <!-- ABA 4: CLASSIFICAÇÃO GERAL -->
   <div id="tab-classificacao" class="tab-content">
     <div class="section-header">
-      <div class="section-title"><span>🏆</span> Classificação Geral e Pontuação</div>
+      <div class="section-title"><span>🏆</span> Classificação Geral e Pontuação (<span class="lbl-ano-atual">2026</span>)</div>
       <button class="btn-3d btn-print no-print" onclick="window.print()">🖨️ Imprimir Classificação</button>
     </div>
 
@@ -395,7 +410,37 @@
     </div>
   </div>
 
-  <!-- ABA 5: SELEÇÃO PARA IMPRESSÃO -->
+  <!-- ABA 5: CONFIGURAÇÕES DO CABEÇALHO -->
+  <div id="tab-config" class="tab-content no-print">
+    <div class="section-header">
+      <div class="section-title"><span>⚙️</span> Personalizar Cabeçalho e Identidade do Evento</div>
+    </div>
+
+    <div class="import-box" style="max-width: 650px;">
+      <h3>Edição de Textos e Logotipo</h3>
+      <form onsubmit="salvarConfiguracoesCabecalho(event)">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>Título Principal:</label>
+          <input type="text" id="cfg-titulo" placeholder="Ex: Colégio Bom Jesus Maringá" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>Subtítulo do Torneio:</label>
+          <input type="text" id="cfg-subtitulo" placeholder="Ex: Torneio Interno - Tênis de Mesa & Xadrez" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 15px;">
+          <label>Texto do Selo / Unidade (Canto Superior):</label>
+          <input type="text" id="cfg-badge" placeholder="Ex: Unidade Maringá" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label>Logo do Campeonato:</label>
+          <button type="button" class="btn-3d" onclick="document.getElementById('input-logo-file').click()">📷 Selecionar Nova Imagem de Logo</button>
+        </div>
+        <button type="submit" class="btn-3d btn-success">💾 Salvar Alterações do Cabeçalho</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ABA 6: SELEÇÃO PARA IMPRESSÃO -->
   <div id="tab-impressao" class="tab-content no-print">
     <div class="section-header">
       <div class="section-title"><span>🖨️</span> Painel Personalizado de Impressão</div>
@@ -412,6 +457,14 @@
   </div>
 
   <script>
+    let bancoEdicoes = {};
+    let anoAtivo = '2026';
+    let configCabecalho = {
+      titulo: 'Colégio Bom Jesus Maringá',
+      subtitulo: 'Torneio Interno - Tênis de Mesa & Xadrez',
+      badge: 'Unidade Maringá'
+    };
+
     let bancoAtletas = [];
     let torneioAtual = {
       tipo: 'dupla',
@@ -423,38 +476,135 @@
     };
 
     window.onload = function() {
-      carregarDadosLocais();
+      carregarDadosGerais();
     };
 
-    function salvarDadosLocais() {
-      localStorage.setItem('bj_atletas', JSON.stringify(bancoAtletas));
-      localStorage.setItem('bj_torneio', JSON.stringify(torneioAtual));
-    }
-
-    function carregarDadosLocais() {
-      const atletasSalvos = localStorage.getItem('bj_atletas');
-      const torneioSalvo = localStorage.getItem('bj_torneio');
+    function carregarDadosGerais() {
+      const edicoesSalvas = localStorage.getItem('bj_edicoes_v2');
+      const anoSalvo = localStorage.getItem('bj_ano_ativo_v2');
+      const configSalva = localStorage.getItem('bj_config_cabecalho');
       const logoSalva = localStorage.getItem('bj_logo');
 
-      if (atletasSalvos) bancoAtletas = JSON.parse(atletasSalvos);
-      if (torneioSalvo) torneioAtual = JSON.parse(torneioSalvo);
+      if (configSalva) configCabecalho = JSON.parse(configSalva);
+      aplicarCabecalhoNaTela();
+
       if (logoSalva) aplicarLogoNaTela(logoSalva);
+
+      if (edicoesSalvas) {
+        bancoEdicoes = JSON.parse(edicoesSalvas);
+      } else {
+        bancoEdicoes = {
+          '2026': {
+            atletas: [],
+            torneio: { tipo: 'dupla', vencedores: [], perdedores: [], grandFinal: null, disputaTerceiro: null, classificacao: { campeao: null, vice: null, terceiro: null } }
+          }
+        };
+      }
+
+      anoAtivo = anoSalvo && bancoEdicoes[anoSalvo] ? anoSalvo : Object.keys(bancoEdicoes)[0];
+      
+      atualizarSelectAnos();
+      carregarAnoAtual();
+    }
+
+    function salvarDadosGerais() {
+      bancoEdicoes[anoAtivo] = {
+        atletas: bancoAtletas,
+        torneio: torneioAtual
+      };
+      localStorage.setItem('bj_edicoes_v2', JSON.stringify(bancoEdicoes));
+      localStorage.setItem('bj_ano_ativo_v2', anoAtivo);
+      localStorage.setItem('bj_config_cabecalho', JSON.stringify(configCabecalho));
+    }
+
+    function carregarAnoAtual() {
+      const dadosDoAno = bancoEdicoes[anoAtivo] || { atletas: [], torneio: {} };
+      bancoAtletas = dadosDoAno.atletas || [];
+      torneioAtual = dadosDoAno.torneio || { tipo: 'dupla', vencedores: [], perdedores: [], grandFinal: null, disputaTerceiro: null, classificacao: { campeao: null, vice: null, terceiro: null } };
+
+      document.querySelectorAll('.lbl-ano-atual').forEach(el => el.innerText = anoAtivo);
 
       renderizarTabelaAtletas();
       if (torneioAtual.vencedores && torneioAtual.vencedores.length > 0) {
         renderizarTodasChaves();
         atualizarTabelaClassificacao();
+      } else {
+        document.getElementById('area-chaves-desenho').innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 40px; background: #f4f8f5; border-radius: 8px; border: 1px dashed #a3c9b1;">Selecione os parâmetros acima e clique em <strong>"Gerar / Resetar Chave Interativa"</strong>.</div>`;
+        atualizarTabelaClassificacao();
       }
     }
 
-    function limparTudo() {
-      if (confirm("Tem certeza que deseja apagar TODOS os alunos e chaves cadastradas?")) {
-        localStorage.clear();
+    function trocarAnoAtivo(novoAno) {
+      salvarDadosGerais();
+      anoAtivo = novoAno;
+      localStorage.setItem('bj_ano_ativo_v2', anoAtivo);
+      carregarAnoAtual();
+    }
+
+    function atualizarSelectAnos() {
+      const select = document.getElementById('select-ano-ativo');
+      select.innerHTML = '';
+      Object.keys(bancoEdicoes).sort().reverse().forEach(ano => {
+        const opt = document.createElement('option');
+        opt.value = ano;
+        opt.innerText = `Campeonato ${ano}`;
+        if (ano === anoAtivo) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    function abrirModalNovoAno() {
+      const proximoAnoSugerido = parseInt(Object.keys(bancoEdicoes).sort().pop() || '2026') + 1;
+      const novoAno = prompt("Digite o ano da nova edição do campeonato:", proximoAnoSugerido);
+      
+      if (novoAno && novoAno.trim()) {
+        const anoLimpo = novoAno.trim();
+        if (!bancoEdicoes[anoLimpo]) {
+          bancoEdicoes[anoLimpo] = {
+            atletas: [],
+            torneio: { tipo: 'dupla', vencedores: [], perdedores: [], grandFinal: null, disputaTerceiro: null, classificacao: { campeao: null, vice: null, terceiro: null } }
+          };
+          salvarDadosGerais();
+          atualizarSelectAnos();
+          trocarAnoAtivo(anoLimpo);
+          alert(`Nova edição de ${anoLimpo} criada com sucesso! Todos os dados de edições anteriores continuam salvos.`);
+        } else {
+          alert("Esta edição já existe! Selecione-a na caixa de seleção.");
+          trocarAnoAtivo(anoLimpo);
+        }
+      }
+    }
+
+    function salvarConfiguracoesCabecalho(e) {
+      e.preventDefault();
+      configCabecalho.titulo = document.getElementById('cfg-titulo').value.trim();
+      configCabecalho.subtitulo = document.getElementById('cfg-subtitulo').value.trim();
+      configCabecalho.badge = document.getElementById('cfg-badge').value.trim();
+
+      salvarDadosGerais();
+      aplicarCabecalhoNaTela();
+      alert("Cabeçalho atualizado com sucesso!");
+    }
+
+    function aplicarCabecalhoNaTela() {
+      document.getElementById('header-display-titulo').innerText = configCabecalho.titulo;
+      document.getElementById('header-display-subtitulo').innerText = configCabecalho.subtitulo;
+      document.getElementById('header-display-badge').innerText = configCabecalho.badge;
+
+      document.getElementById('print-header-titulo').innerText = configCabecalho.titulo;
+      document.getElementById('print-header-subtitulo').innerText = configCabecalho.subtitulo;
+
+      document.getElementById('cfg-titulo').value = configCabecalho.titulo;
+      document.getElementById('cfg-subtitulo').value = configCabecalho.subtitulo;
+      document.getElementById('cfg-badge').value = configCabecalho.badge;
+    }
+
+    function limparTudoAnoAtual() {
+      if (confirm(`Tem certeza que deseja apagar TODOS os alunos e chaves cadastradas da edição ${anoAtivo}? As edições dos outros anos NÃO serão afetadas.`)) {
         bancoAtletas = [];
         torneioAtual = { tipo: 'dupla', vencedores: [], perdedores: [], grandFinal: null, disputaTerceiro: null, classificacao: { campeao: null, vice: null, terceiro: null } };
-        renderizarTabelaAtletas();
-        document.getElementById('area-chaves-desenho').innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 40px; background: #f4f8f5; border-radius: 8px; border: 1px dashed #a3c9b1;">Selecione os parâmetros acima e clique em <strong>"Gerar / Resetar Chave Interativa"</strong>.</div>`;
-        atualizarTabelaClassificacao();
+        salvarDadosGerais();
+        carregarAnoAtual();
       }
     }
 
@@ -493,7 +643,7 @@
         segmento: document.getElementById('ind-segmento').value,
         turma: document.getElementById('ind-turma').value.trim()
       });
-      salvarDadosLocais();
+      salvarDadosGerais();
       alert('Atleta cadastrado com sucesso!');
       document.getElementById('form-individual').reset();
       renderizarTabelaAtletas();
@@ -511,7 +661,7 @@
         bancoAtletas.push({ id: Date.now() + Math.random(), nome, modalidade: mod, genero: gen, segmento: seg, turma });
       });
 
-      salvarDadosLocais();
+      salvarDadosGerais();
       alert(`${nomes.length} atletas adicionados com sucesso!`);
       document.getElementById('form-lote').reset();
       renderizarTabelaAtletas();
@@ -551,7 +701,7 @@
 
     function removerAtleta(id) {
       bancoAtletas = bancoAtletas.filter(a => a.id !== id);
-      salvarDadosLocais();
+      salvarDadosGerais();
       renderizarTabelaAtletas();
     }
 
@@ -624,7 +774,7 @@
 
       atualizarCalculoChaves();
       renderizarTodasChaves();
-      salvarDadosLocais();
+      salvarDadosGerais();
     }
 
     function selecionarVencedor(chave, rIndex, mIndex, atletaId) {
@@ -645,7 +795,7 @@
       atualizarCalculoChaves();
       renderizarTodasChaves();
       atualizarTabelaClassificacao();
-      salvarDadosLocais();
+      salvarDadosGerais();
     }
 
     function selecionarVencedorExtra(atletaId) {
@@ -655,7 +805,7 @@
       atualizarCalculoChaves();
       renderizarTodasChaves();
       atualizarTabelaClassificacao();
-      salvarDadosLocais();
+      salvarDadosGerais();
     }
 
     function atualizarCalculoChaves() {
